@@ -1,0 +1,16 @@
+name = "code-explainer-tutor"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# Environment variables go here
+
+[[d1_databases]]
+binding = "DB"
+database_name = "code-explainer-tutor-db"
+database_id = "5f8f921a-c155-49fe-bfdf-9e9d2b05ca5c"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "code-explainer-tutor-files"
