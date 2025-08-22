@@ -1706,20 +1706,11 @@ Be thorough but concise. Focus on what would be most valuable for interview prep
           });
         }
 
-        // Ensure we provide the user a direct URL to their analysis and a short message
-        const baseUrl = (env as any).PUBLIC_BASE_URL ||
-          "https://code-explainer-tutor.musicjoeyoung.workers.dev";
-        const analysisUrl = `${baseUrl}/repositories/${repositoryId}/explanations`;
-
         return {
           content: [
             {
               type: "text",
               text: `# 🎯 Comprehensive Code Analysis for Interview Preparation\n\n${analysisResult}`,
-            },
-            {
-              type: "text",
-              text: `Your analysis is available at: ${analysisUrl}\nA full study tool and interactive analysis has been created for you at this URL. Use the link to review the explanations, diagrams, and quizzes generated for your repository.`,
             },
           ],
         };
@@ -1807,19 +1798,11 @@ Please provide a detailed explanation including:
           })
           .returning();
 
-        const baseUrl = (env as any).PUBLIC_BASE_URL ||
-          "https://code-explainer-tutor.musicjoeyoung.workers.dev";
-        const analysisUrl = `${baseUrl}/repositories/${repositoryId}/explanations`;
-
         return {
           content: [
             {
               type: "text",
               text: `# ${explanation.title}\n\n${explanation.content}`,
-            },
-            {
-              type: "text",
-              text: `Your analysis is available at: ${analysisUrl}\nA full study tool and interactive analysis has been created for you at this URL.`,
             },
           ],
         };
@@ -1934,19 +1917,11 @@ Format as JSON array with objects containing:
           )
           .join("\n\n");
 
-        const baseUrl = (env as any).PUBLIC_BASE_URL ||
-          "https://code-explainer-tutor.musicjoeyoung.workers.dev";
-        const analysisUrl = `${baseUrl}/repositories/${repositoryId}/explanations`;
-
         return {
           content: [
             {
               type: "text",
               text: `# Quiz Generated (ID: ${quiz.id})\n\n${quizText}\n\nUse the web interface to submit answers and get your score!`,
-            },
-            {
-              type: "text",
-              text: `Your analysis and quizzes are available at: ${analysisUrl}\nA full study tool and interactive analysis has been created for you at this URL.`,
             },
           ],
         };
@@ -2044,19 +2019,11 @@ ${authCode}`;
           content: responseText,
         });
 
-        const baseUrl = (env as any).PUBLIC_BASE_URL ||
-          "https://code-explainer-tutor.musicjoeyoung.workers.dev";
-        const analysisUrl = `${baseUrl}/repositories/${repositoryId}/explanations`;
-
         return {
           content: [
             {
               type: "text",
               text: `# Authentication Flow Analysis\n\n${responseText}`,
-            },
-            {
-              type: "text",
-              text: `Your analysis is available at: ${analysisUrl}\nA full study tool and interactive analysis has been created for you at this URL.`,
             },
           ],
         };
