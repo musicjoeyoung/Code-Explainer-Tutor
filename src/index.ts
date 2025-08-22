@@ -128,6 +128,16 @@ function detectLanguages(files: string[]): string[] {
 }
 
 // Helper function to convert markdown to proper HTML structure matching user specifications
+// Helper: escape HTML for safe rendering of code blocks (we will NOT use <code> tags)
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function markdownToHtml(markdown: string): string {
   let html = markdown;
 
@@ -151,18 +161,18 @@ function markdownToHtml(markdown: string): string {
   html = html.replace(
     /\*\*Question (\d+):\*\* (.*?)\n\*\*Expected Answer:\*\* (.*?)\n\*\*Follow-up:\*\* (.*?)(?=\n\*\*Question|\n\*\*Resource|$)/gs,
     (match, questionNum, questionText, expectedAnswer, followUp) => {
-      // Process the question text to handle code tags properly
+      // Process the question text to handle inline code without using <code> tags
       const processedQuestionText = questionText
         .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/`([^`]+)`/g, "<code>$1</code>");
+        .replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
 
       const processedExpectedAnswer = expectedAnswer
         .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/`([^`]+)`/g, "<code>$1</code>");
+        .replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
 
       const processedFollowUp = followUp
         .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/`([^`]+)`/g, "<code>$1</code>");
+        .replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
 
       return `\n<details>
   <summary><strong>Question ${questionNum}:</strong> ${processedQuestionText}</summary>
@@ -205,13 +215,13 @@ function markdownToHtml(markdown: string): string {
   // Convert bold text (but not in already processed areas)
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  // Convert inline code (but be careful not to double-process)
-  html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+  // Convert inline code to span.inline-code (no <code> tags)
+  html = html.replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
 
-  // Convert code blocks
+  // Convert code blocks to pre.code-block and escape content (no <code> tag)
   html = html.replace(/```[\s\S]*?```/g, (match) => {
     const code = match.replace(/```\w*\n?/g, "").replace(/```$/g, "");
-    return `<pre><code>${code}</code></pre>`;
+    return `<pre class="code-block">${escapeHtml(code)}</pre>`;
   });
 
   // Process line by line for proper list and paragraph structure
@@ -1085,9 +1095,9 @@ app.get("/repositories/:id/explanations", async (c) => {
         .content ul { margin: 16px 0; padding-left: 24px; }
         .content ol { margin: 16px 0; padding-left: 24px; }
         .content li { margin: 8px 0; color: #374151; line-height: 1.5; }
-        .content code { background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 14px; color: #e11d48; }
-        .content pre { background: #f8fafc; padding: 24px; border-radius: 8px; overflow-x: auto; margin: 20px 0; border: 1px solid #e2e8f0; }
-        .content pre code { background: none; padding: 0; color: #374151; }
+  .content .inline-code { background: #f1f5f9; padding: 3px 6px; border-radius: 4px; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 14px; color: #e11d48; }
+  .content pre { background: #f8fafc; padding: 24px; border-radius: 8px; overflow-x: auto; margin: 20px 0; border: 1px solid #e2e8f0; }
+  .content pre.code-block { background: #f8fafc; padding: 24px; border-radius: 8px; overflow-x: auto; margin: 20px 0; border: 1px solid #e2e8f0; color: #374151; font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 14px; line-height: 1.5; }
         .content strong { color: #1e293b; font-weight: 600; }
         .content em { color: #6b7280; }
         
