@@ -296,7 +296,7 @@ function markdownToHtml(markdown: string): string {
     }
   }
 
-  // Close any remaining list
+  // Close any remaining list!
   if (inList) {
     processedLines.push(`</${listType}>`);
   }
