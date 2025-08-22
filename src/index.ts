@@ -185,11 +185,9 @@ function markdownToHtml(markdown: string): string {
           /\*\*Resource (\d+):\*\* (.*?) - (https?:\/\/[^\s]+) - (.*?)$/s,
         );
         if (resourceMatch) {
-          const [, num, title, url, description] = resourceMatch;
-          return `                    <li>
-                        <strong>Resource ${num}:</strong> <a href="${url}" target="_blank" rel="noopener noreferrer">${title}</a> -
-                        ${description}
-                    </li>`;
+          const [, , title, url] = resourceMatch;
+          // Render as plain text list item: Title - URL
+          return `                    <li>${title} - ${url}</li>`;
         }
         return "";
       })
