@@ -183,19 +183,29 @@ function markdownToHtml(markdown: string): string {
   );
 
   // Extract and remove resources section - will be added inside content div
+  // Support both plain URLs and markdown links like [Title](https://...)
   const resourceMatches = html.match(
-    /\*\*Resource \d+:\*\* .*? - https?:\/\/[^\s]+ - .*?(?=\n\*\*Resource|$)/gs,
+    /\*\*Resource \d+:\*\* .*? - (?:\[[^\]]+\]\(https?:\/\/[^\s]+\)|https?:\/\/[^\s]+) - .*?(?=\n\*\*Resource|$)/gs,
   );
   let resourcesSection = "";
   if (resourceMatches) {
     const resourcesList = resourceMatches
       .map((match) => {
-        // Parse: **Resource 1:** Title - URL - Description
+        // Parse possible forms:
+        // **Resource 1:** Title - https://... - Description
+        // **Resource 1:** Title - [Title](https://...) - Description
         const resourceMatch = match.match(
-          /\*\*Resource (\d+):\*\* (.*?) - (https?:\/\/[^\s]+) - (.*?)$/s,
+          /\*\*Resource (\d+):\*\* (.*?) - (?:(?:\[(.*?)\]\((https?:\/\/[^\s]+)\))|(https?:\/\/[^\s]+)) - (.*?)$/s,
         );
         if (resourceMatch) {
-          const [, , title, url] = resourceMatch;
+          // If markdown link form matched, resourceMatch[3]=title, [4]=url
+          // Else resourceMatch[2]=title, [5]=url
+          const mdTitle = resourceMatch[3];
+          const mdUrl = resourceMatch[4];
+          const plainTitle = resourceMatch[2];
+          const plainUrl = resourceMatch[5];
+          const title = mdTitle || plainTitle || "Resource";
+          const url = mdUrl || plainUrl || "";
           // Render as plain text list item: Title - URL
           return `                    <li>${title} - ${url}</li>`;
         }
@@ -205,9 +215,9 @@ function markdownToHtml(markdown: string): string {
 
     resourcesSection = `\n</section>\n<section>\n<h2>8. SUPPLEMENTAL LEARNING RESOURCES</h2>\n<ul>\n${resourcesList}\n</ul>\n</section>`;
 
-    // Remove resources from main content
+    // Remove resources from main content (match both plain URL and markdown link forms)
     html = html.replace(
-      /\*\*Resource \d+:\*\* .*? - https?:\/\/[^\s]+ - .*?(?=\n\*\*Resource|$)/gs,
+      /\*\*Resource \d+:\*\* .*? - (?:\[[^\]]+\]\(https?:\/\/[^\s]+\)|https?:\/\/[^\s]+) - .*?(?=\n\*\*Resource|$)/gs,
       "",
     );
   }
