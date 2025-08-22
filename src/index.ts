@@ -188,8 +188,9 @@ function markdownToHtml(markdown: string): string {
     /\*\*Resource \d+:\*\* .*? - (?:\[[^\]]+\]\(https?:\/\/[^\s]+\)|https?:\/\/[^\s]+) - .*?(?=\n\*\*Resource|$)/gs,
   );
   let resourcesSection = "";
+  let resourcesList = "";
   if (resourceMatches) {
-    const resourcesList = resourceMatches
+    const listHtml = resourceMatches
       .map((match) => {
         // Parse possible forms:
         // **Resource 1:** Title - https://... - Description
@@ -212,6 +213,7 @@ function markdownToHtml(markdown: string): string {
         return "";
       })
       .join("\n");
+    resourcesList = listHtml;
 
     resourcesSection = `\n</section>\n<section>\n<h2>8. SUPPLEMENTAL LEARNING RESOURCES</h2>\n<ul>\n${resourcesList}\n</ul>\n</section>`;
 
@@ -326,7 +328,26 @@ function markdownToHtml(markdown: string): string {
   result = result.replace(/^<\/section>\n/, ""); // Remove leading closing section tag
   result = `<section>\n${result}`; // Add opening section tag
 
+  // If resourcesSection exists, try to insert into an existing 8. SUPPLEMENTAL LEARNING RESOURCES header
+  if (resourcesSection) {
+    // Look for the h2 title for section 8 (case-insensitive-ish)
+    const h2Regex = /<h2>\s*8\.\s*SUPPLEMENTAL LEARNING RESOURCES\s*<\/h2>/i;
+    if (h2Regex.test(result)) {
+      // Remove any empty <p> that may immediately follow the h2 to avoid blank paragraph
+      result = result.replace(/(<h2>\s*8\.\s*SUPPLEMENTAL LEARNING RESOURCES\s*<\/h2>)\n\s*<p>\s*<\/p>/i, "$1");
+      // Insert the <ul> right after the existing h2
+      result = result.replace(h2Regex, (match) => `${match}\n<ul>\n${resourcesListPlaceholder(resourcesList)}\n</ul>`);
+      // resourcesSection already injected, return result
+      return result;
+    }
+  }
+
   return result + resourcesSection;
+}
+
+// Helper to safely inject resourcesList (keeps newline escaping simple)
+function resourcesListPlaceholder(listHtml: string): string {
+  return listHtml;
 }
 
 // Helper function to generate diagram images using Google Imagen
