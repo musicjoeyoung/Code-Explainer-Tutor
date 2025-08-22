@@ -342,6 +342,24 @@ function markdownToHtml(markdown: string): string {
     }
   }
 
+  // Post-process sections: Section 2 is allowed to use <code> tags; convert inline/code-blocks accordingly
+  // Find the section 2 block and transform only within it
+  result = result.replace(/(<section>[\s\S]*?<h2>\s*2\.\s*[^<]+<\/h2>)([\s\S]*?)(<\/section>)/i, (full, head, body, tail) => {
+    let newBody = body;
+
+    // Convert inline .inline-code spans to <code> with escaped content
+    newBody = newBody.replace(/<span class=\"inline-code\">([\s\S]*?)<\/span>/g, (_m: string, inner: string) => {
+      return `<code>${escapeHtml(inner)}</code>`;
+    });
+
+    // Convert pre.code-block to pre with inner <code> (content already escaped)
+    newBody = newBody.replace(/<pre class=\"code-block\">([\s\S]*?)<\/pre>/g, (_m: string, inner: string) => {
+      return `<pre><code>${inner}</code></pre>`;
+    });
+
+    return head + newBody + tail;
+  });
+
   return result + resourcesSection;
 }
 
