@@ -25,6 +25,18 @@ Built for the Fiberplane + Cloudflare "vibesummer" hackathon (https://vibesummer
 - Model Context Protocol (MCP) server libraries for structured analysis
 - Vitest for testing, Biome for formatting/linting
 
+## How to use
+
+1. Deploy or run the MCP server and note its public URL (example: `https://my-mcp.example.workers.dev/mcp`).
+2. In your MCP-capable AI generator (for example, CodeGen or other tools that support MCP), add that URL as the MCP endpoint.
+3. Ask the generator to analyze a repository using a short prompt. Example:
+
+```
+Analyze this repo: {repo url here}
+```
+
+The generator will call the MCP server to fetch the structured analysis (explanations, quiz, resources, diagrams) for the provided repository.
+
 
 ## 🪿 HONC
 
