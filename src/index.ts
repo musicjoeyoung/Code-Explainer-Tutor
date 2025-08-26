@@ -227,8 +227,8 @@ function markdownToHtml(markdown: string): string {
   // Convert bold text (but not in already processed areas)
   html = html.replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>");
 
-  // Convert inline code to span.inline-code (no <code> tags)
-  html = html.replace(/`([^`]+)`/g, '<span class="inline-code">$1</span>');
+  // Convert inline code to span.inline-code (no <code> tags), always HTML-escape content
+  html = html.replace(/`([^`]+)`/g, (_m: string, inner: string) => `<span class="inline-code">${escapeHtml(inner)}</span>`);
 
   // Convert code blocks to pre.code-block and escape content (no <code> tag)
   html = html.replace(/```[\s\S]*?```/g, (match) => {
