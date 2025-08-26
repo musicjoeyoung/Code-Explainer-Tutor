@@ -1,3 +1,31 @@
+# Code-Explainer-Tutor
+
+## Summary
+
+This repository contains the Code Explainer + Tutor MCP (Model Context Protocol) server: a Hono-based Cloudflare Workers app that analyzes a codebase, generates a structured analysis (explanations, quiz questions, diagrams), and exposes a simple web viewer for review.
+
+## Why it was built
+
+Built for the Fiberplane + Cloudflare "vibesummer" hackathon (https://vibesummer.honc.dev/) to demonstrate how generative models and Cloudflare Workers can be used together to produce code-focused learning artifacts and interview prep materials.
+
+## Requirements (what you need to run this MCP)
+
+- Node.js (recommended 18+)
+- Wrangler (for Cloudflare Workers & D1 integration)
+- A Cloudflare account with a D1 database (or local D1 for testing)
+- Google Generative AI API key (set as `GOOGLE_AI_API_KEY` in your environment) to enable diagram/analysis generation
+- Optional: `GITHUB_TOKEN` for ingesting repositories from GitHub
+
+## Tech stack
+
+- Hono (Cloudflare Workers router) - (see more below)
+- Cloudflare D1 (SQLite-compatible serverless DB) via Drizzle ORM
+- Drizzle ORM + drizzle-kit for schema & migrations
+- Google Generative AI SDK for diagrams/content generation
+- Model Context Protocol (MCP) server libraries for structured analysis
+- Vitest for testing, Biome for formatting/linting
+
+
 ## 🪿 HONC
 
 This is a project created with the `create-honc-app` template. 
@@ -105,4 +133,3 @@ npm run deploy
 ```
 
 
-# Code-Explainer-Tutor
