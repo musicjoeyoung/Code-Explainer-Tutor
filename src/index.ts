@@ -20,6 +20,15 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
+// Always include the public viewer URL in every response via a header.
+// This satisfies the requirement that the client always receives the viewer URL.
+const VIEWER_URL = "https://code-explainer-tutor.musicjoeyoung.workers.dev/viewer";
+app.use("*", async (c, next) => {
+  await next();
+  // Set a consistent header so clients can find the viewer URL in every response.
+  c.header("X-Viewer-URL", VIEWER_URL);
+});
+
 // Root endpoint
 app.get("/", (c) => {
   return c.json({
@@ -35,6 +44,7 @@ app.get("/", (c) => {
       github: "/repositories/github",
       viewer: "/viewer",
     },
+    viewerUrl: VIEWER_URL,
   });
 });
 
@@ -794,7 +804,7 @@ app.post("/repositories/upload", async (c) => {
       })
       .returning();
 
-    return c.json({ repository }, 201);
+    return c.json({ repository, viewerUrl: VIEWER_URL }, 201);
   } catch (error) {
     return c.json(
       {
@@ -863,7 +873,7 @@ app.post("/repositories/github", async (c) => {
       })
       .returning();
 
-    return c.json({ repository }, 201);
+    return c.json({ repository, viewerUrl: VIEWER_URL }, 201);
   } catch (error) {
     return c.json(
       {
@@ -908,6 +918,7 @@ app.get("/repositories", async (c) => {
         duplicateIds.length > 0
           ? `Found ${duplicateIds.length} duplicate repositories`
           : undefined,
+      viewerUrl: VIEWER_URL,
     });
   } catch (error) {
     return c.json(
@@ -943,7 +954,7 @@ app.get("/repositories/:id", async (c) => {
       lastModified: obj.uploaded,
     }));
 
-    return c.json({ repository, files });
+    return c.json({ repository, files, viewerUrl: VIEWER_URL });
   } catch (error) {
     return c.json(
       {
@@ -1318,7 +1329,7 @@ app.get("/repositories/:id/explanations", async (c) => {
 
       return c.html(html);
     } else {
-      return c.json({ explanations });
+      return c.json({ explanations, viewerUrl: VIEWER_URL });
     }
   } catch (error) {
     return c.json(
@@ -1346,7 +1357,7 @@ app.get("/explanations/:id", async (c) => {
       return c.json({ error: "Explanation not found" }, 404);
     }
 
-    return c.json({ explanation });
+    return c.json({ explanation, viewerUrl: VIEWER_URL });
   } catch (error) {
     return c.json(
       {
