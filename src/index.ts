@@ -371,6 +371,11 @@ function resourcesListPlaceholder(listHtml: string): string {
   return listHtml;
 }
 
+// Helper to convert SVG string into a safe data URL (URI-encoded UTF-8)
+function svgDataUrl(svg: string): string {
+  return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
+}
+
 // Helper function to generate diagram images using Google Imagen
 async function generateDiagramImage(
   diagramDescription: string,
@@ -458,7 +463,7 @@ function createCodeAnalogiesSVG(description: string): string {
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return svgDataUrl(svg);
 }
 
 // Project structure SVG generator
@@ -509,7 +514,7 @@ function createProjectStructureSVG(description: string): string {
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return svgDataUrl(svg);
 }
 
 // Advanced SVG diagram generator for state/props tree structure
@@ -595,7 +600,7 @@ function createStatePropsTreeSVG(description: string): string {
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return svgDataUrl(svg);
 }
 function createGenericDiagramSVG(description: string): string {
   const svg = `
@@ -637,7 +642,7 @@ function createGenericDiagramSVG(description: string): string {
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
+  return svgDataUrl(svg);
 }
 
 // Fallback SVG diagram generator
@@ -687,7 +692,7 @@ function createFallbackSVG(description: string): string {
     </svg>
   `;
 
-  return `data:image/svg+xml;base64,${btoa(svgDiagram)}`;
+  return svgDataUrl(svgDiagram);
 }
 async function extractZipFiles(
   _zipBuffer: ArrayBuffer,
@@ -1061,7 +1066,7 @@ Format your response as JSON with fields: title, content (markdown), diagram (me
         title: explanationObj.title,
         content: explanationObj.content,
         diagramUrl: explanationObj.diagram
-          ? `data:text/plain;base64,${btoa(explanationObj.diagram)}`
+          ? `data:text/plain;utf8,${encodeURIComponent(explanationObj.diagram)}`
           : null,
       })
       .returning();
