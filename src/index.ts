@@ -205,10 +205,13 @@ function markdownToHtml(markdown: string): string {
           const mdUrl = resourceMatch[4];
           const plainTitle = resourceMatch[2];
           const plainUrl = resourceMatch[5];
-          const title = mdTitle || plainTitle || "Resource";
-          const url = mdUrl || plainUrl || "";
-          // Render as plain text list item: Title - URL
-          return `                    <li>${title} - ${url}</li>`;
+          const title = (mdTitle || plainTitle || "Resource").trim();
+          const url = (mdUrl || plainUrl || "").trim();
+          // If the title equals the URL, render only the URL once; otherwise render 'Title - URL'
+          if (title && url && title === url) {
+            return `                    <li>${url}</li>`;
+          }
+          return `                    <li>${title}${url ? ` - ${url}` : ""}</li>`;
         }
         return "";
       })
